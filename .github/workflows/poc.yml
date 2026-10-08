@@ -1,0 +1,16 @@
+name: poc
+on: [push, workflow_dispatch]
+jobs:
+  poc:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Install Solana CLI 2.1.21
+        run: |
+          sh -c "$(curl -sSfL https://release.anza.xyz/v2.1.21/install)"
+          echo "$HOME/.local/share/solana/install/active_release/bin" >> $GITHUB_PATH
+      - name: Build SBF program
+        run: cd solana && cargo-build-sbf
+      - name: Run PoC
+        run: cd solana && cargo test -p bridge relayer_signer_privilege -- --nocapture
